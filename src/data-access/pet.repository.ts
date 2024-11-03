@@ -13,7 +13,7 @@ function getNextId<T extends { id: number }>(items: T[]) {
 export class PetRepository {
   constructor(private readonly store: JsonFileStore<Pet>) {}
 
-  async create(petProperties: PetProperties) {
+  async create(petProperties: PetProperties): Promise<Pet> {
     const pets = await this.store.read();
     const nextId = getNextId(pets);
 
@@ -25,5 +25,15 @@ export class PetRepository {
     pets.push(newPet);
     await this.store.write(pets);
     return newPet;
+  }
+
+  async list(): Promise<Pet[]> {
+    const pets = await this.store.read();
+    return pets;
+  }
+
+  async getById(id: number): Promise<Pet | undefined> {
+    const pets = await this.store.read();
+    return pets.find((p) => p.id === id);
   }
 }
