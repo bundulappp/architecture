@@ -1,4 +1,4 @@
-export const getPetByIdSchema = {
+export const paramsIdSchema = {
   params: {
     type: 'object',
     properties: {

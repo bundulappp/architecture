@@ -32,4 +32,28 @@ export class PetService {
 
     return matchingPet;
   }
+
+  async feed(id: number): Promise<Pet> {
+    const pet = await this.repository.feed(id);
+    if (!pet) {
+      throw new AppError(`The pet has not found with the following id: ${id}`);
+    }
+
+    if (pet.food < 0) {
+      throw new AppError(`The pet is dead with the following id :${id}`);
+    }
+    return pet;
+  }
+
+  async increaseAge(id: number): Promise<Pet> {
+    const pet = await this.repository.increaseAge(id);
+    if (!pet) {
+      throw new AppError(`The pet has not found with the following id: ${id}`);
+    }
+
+    if (pet.food < 0) {
+      throw new AppError(`The pet is dead with the following id :${id}`);
+    }
+    return pet;
+  }
 }

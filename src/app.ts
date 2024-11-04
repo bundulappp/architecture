@@ -6,7 +6,7 @@ import { JsonFileStore } from './utils/json-file-store';
 import { PetService } from './business/pet.service';
 import { Pet } from './business/pet-type';
 import { postPetSchema } from './schemas/post-pet.schema';
-import { getPetByIdSchema } from './schemas/get-pet-by-id.schema';
+import { paramsIdSchema } from './schemas/get-pet-by-id.schema';
 import { AppError } from './utils/app.error';
 
 export default async function createApp(options = {}, dataFilePath: PathLike) {
@@ -29,7 +29,7 @@ export default async function createApp(options = {}, dataFilePath: PathLike) {
     return await petService.list();
   });
 
-  app.get('/pets/:id', { schema: getPetByIdSchema }, async (request, reply) => {
+  app.get('/pets/:id', { schema: paramsIdSchema }, async (request, reply) => {
     const { id } = request.params;
 
     if (isNaN(+id)) {
@@ -45,6 +45,50 @@ export default async function createApp(options = {}, dataFilePath: PathLike) {
       return reply.status(500).send({ message: 'Internal Server Error' });
     }
   });
+
+  app.post(
+    '/pets/:id/food',
+    { schema: paramsIdSchema },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (isNaN(+id)) {
+        return reply.status(400).send({ message: 'Id is not a number' });
+      }
+
+      try {
+        const pet = await petService.feed(+id);
+        return reply.status(200).send(pet);
+      } catch (error) {
+        if (error instanceof AppError) {
+          reply.status(404).send({ message: error.message });
+        }
+        return reply.status(500).send({ message: 'Internal Server Error' });
+      }
+    }
+  );
+
+  app.post(
+    '/pets/:id/age',
+    { schema: paramsIdSchema },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      if (isNaN(+id)) {
+        return reply.status(400).send({ message: 'Id is not a number' });
+      }
+
+      try {
+        const pet = await petService.increaseAge(+id);
+        return reply.status(200).send(pet);
+      } catch (error) {
+        if (error instanceof AppError) {
+          reply.status(404).send({ message: error.message });
+        }
+        return reply.status(500).send({ message: 'Internal Server Error' });
+      }
+    }
+  );
 
   return app;
 }

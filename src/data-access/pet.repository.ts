@@ -36,4 +36,28 @@ export class PetRepository {
     const pets = await this.store.read();
     return pets.find((p) => p.id === id);
   }
+
+  async feed(id: number): Promise<Pet | undefined> {
+    const pets = await this.store.read();
+
+    const matchingPet = pets.find((pet) => pet.id === id);
+
+    if (matchingPet) {
+      matchingPet.food++;
+      return matchingPet;
+    }
+    return;
+  }
+
+  async increaseAge(id: number): Promise<Pet | undefined> {
+    const pets = await this.store.read();
+
+    const matchingPet = pets.find((pet) => pet.id === id);
+
+    if (matchingPet) {
+      matchingPet.age++;
+      return matchingPet;
+    }
+    return;
+  }
 }
